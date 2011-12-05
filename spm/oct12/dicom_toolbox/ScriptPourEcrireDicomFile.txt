@@ -1,0 +1,3 @@
+dicom_write_volume(Images,['./Dicom/ReconstructionDicom.dcm'])
+dicom_write_volume(Doppler1.Data.Data,['./Dicom/SA52S_FOV1_Doppler1.dcm'])
+dicom_write_volume(Structure.Data.Data,['./Dicom/SA52S_FOV1_Structure.dcm'])
