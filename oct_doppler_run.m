@@ -42,7 +42,7 @@ for acquisition=1:size(OCTmat,1)
     %% This is the timer used for the waitbar time remaining estimation
     ETA_text='Starting reconstruction';
     
-    for i_frame=1:400;
+    for i_frame=1:acqui_info.nframes;
         if i_frame>size(recons_info.A_line_position,2)
             warning('Requested frame number exceeds number of frames, please verify')
             keyboard
@@ -122,14 +122,12 @@ for acquisition=1:size(OCTmat,1)
         doppler_angle=[doppler_angle(:,1) doppler_angle/2]...
             +[doppler_angle/2 doppler_angle(:,end)];
         
-        [npixels,total_frames_temp,depth_temp]=size(recons_info.A_line_position);
         %This function will place the frames inside the Structure and
         %Doppler global variables based on their position declared in
         %the A_line_position variable
         current_position=squeeze(recons_info.A_line_position(:,i_frame,:));
         
         
-        % Do operations in linear space for speed.
         % Do operations in linear space for speed.
         ii=repmat(current_position(:,1),[1 size(vol.data,2)])';
         ii=ii(:);
@@ -156,12 +154,10 @@ for acquisition=1:size(OCTmat,1)
     % Images now reconstructed, renorm volume since we averaged over scans
     ave_grid = reshape(ave_grid,[size(ave_grid,1) 1 size(ave_grid,2)]);
     vol.data = vol.data ./ repmat(ave_grid,[1 size(vol.data,2)]);
-
-    %recons_info.dop_recons.doppler_normalization=max([pi*ceil(max(max(max(abs( vol.data ))))/pi) pi]);
-    %Doppler_frequency=doppler_normalization/pi*double(doppler_int16)...
-    %/double(intmax('int16'))/2/line_period_us/1e-6;
-    %speed=Doppler_frequency*wavelength/2;
-    %speed=speed/2; %This is the correction factor determined by the test on the fantom
+    wavelength=870e-6; %Wavelength in mm
+    vol.data=vol.data*wavelength/(4*pi)/acqui_info.line_period_us/1e-6;
+    vol.data=vol.data/2; %This is the correction factor determined by the test on the fantom
+    
     vol.set_maxmin(max(vol.data(:)),min(vol.data(:)));
     vol.data=(vol.data)/(max(vol.data(:))-min(vol.data(:)))*double(intmax('int16'));
     vol.saveint16([acqui_info.filename '.dop13D']);
