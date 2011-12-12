@@ -2,7 +2,7 @@ function out = oct_create_dicom_run(job)
 
 rev = '$Rev$'; 
 
-addpath(['.' filesep 'dicom_toolbox'])
+addpath([spm('dir') filesep 'toolbox' filesep 'oct12' filesep 'dicom_toolbox'])
 
 % Reference from previous computation.
 OCTmat=job.OCTmat;

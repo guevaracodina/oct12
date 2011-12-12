@@ -25,8 +25,8 @@ classdef C_OCTVolume < handle
         Hstruct3D=fopen(name,'r');
         obj.dims=fread(Hstruct3D, 3,'int16');
         obj.dims=obj.dims';
-        obj.min_val = fread(Hstruct3D, obj.min_val,1,'double');
-        obj.max_val = fread(Hstruct3D, obj.max_val,1,'double');        
+        obj.min_val = fread(Hstruct3D,1,'double');
+        obj.max_val = fread(Hstruct3D,1,'double');        
         obj.data=fread(Hstruct3D, inf,'int16');
         obj.data=reshape(obj.data,obj.dims);
         fclose(Hstruct3D);
