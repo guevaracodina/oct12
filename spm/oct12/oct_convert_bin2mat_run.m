@@ -40,7 +40,7 @@ for dir_index = 1:size(job.rawdata_dir,1)
     save([OCT.input_dir, 'OCT.mat'],'OCT');
     OCTmat{dir_index}=[OCT.input_dir,'OCT.mat'];
 end
-out.OCTmat = OCTmat;
+out.OCTmat = OCTmat';
 
 function [conversion_info]=Process_bin2dat(filenames,path);
 %This function will take a .bin file and transfer the data to a .dat and

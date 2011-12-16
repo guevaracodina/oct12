@@ -10,7 +10,7 @@ OCTmat=job.OCTmat;
 wb=waitbar(0,'');
 % Loop over acquisitions
 for acquisition=1:size(OCTmat,1)
-    
+    try
     load(OCTmat{acquisition});
     % This reconstruction only works if the ECG data is recorded and we
     % have a 2D ramp type
@@ -41,7 +41,7 @@ for acquisition=1:size(OCTmat,1)
         
         %% Initialize 3D volume and average grid, it is a handle class to be able to pass across functions
         vol=C_OCTVolume(recons_info.size);
-        ave_grid = zeros(size(vol.data,1),size(vol.data,3));        
+        ave_grid = zeros(size(vol.data,1),size(vol.data,3));
         %% This is the timer used for the waitbar time remaining estimation
         ETA_text='Starting reconstruction';
         
@@ -110,7 +110,7 @@ for acquisition=1:size(OCTmat,1)
             
             % Unwrapping of data (not stable in noisy regions)
             doppler_angle=angle(A_conv);
-
+            
             doppler_angle_unwrapped=unwrap(doppler_angle);
             difference=sum(doppler_angle_unwrapped~=doppler_angle);
             positions_to_unwrap=find(difference~=0);
@@ -124,7 +124,7 @@ for acquisition=1:size(OCTmat,1)
             %This will give the result file the same dimension as the input file
             doppler_angle=[doppler_angle(:,1) doppler_angle/2]...
                 +[doppler_angle/2 doppler_angle(:,end)];
-                        
+            
             %This function will place the frames inside the Structure and
             %Doppler global variables based on their position declared in
             %the A_line_position variable
@@ -157,30 +157,36 @@ for acquisition=1:size(OCTmat,1)
         ave_grid = reshape(ave_grid,[size(ave_grid,1) 1 size(ave_grid,2)]);
         ave_filter=ones(3,3,3)/9;
         vol.data = imfilter(vol.data,ave_filter,'circular','same') ./ ...
-                   imfilter(repmat(ave_grid,[1 size(vol.data,2)]),ave_filter,'circular','same');
+            imfilter(repmat(ave_grid,[1 size(vol.data,2)]),ave_filter,'circular','same');
         
         % Protection agaist division by zeros and too large values
         vol.data(find(isnan(vol.data)))=0;
         vol.data(find(vol.data<-100))=0;
         vol.data(find(vol.data>100))=0;
-              
-        % Set normalization of volume   
+        
+        % Set normalization of volume
         wavelength=870e-6; %Wavelength in mm
         vol.data=vol.data*wavelength/(4*pi)/acqui_info.line_period_us/1e-6;
         vol.data=vol.data/2; %This is the correction factor determined by the test on the fantom
-
+        
         vol.set_maxmin(max(vol.data(:)),min(vol.data(:)));
         vol.data=(vol.data-min(vol.data(:)))/(max(vol.data(:))-min(vol.data(:)))*double(intmax('int16'));
         vol.saveint16([acqui_info.filename '.dopl3Dt']);
         
         recons_info.date=date;
-        recons_info.ecg_recons.filename=[acqui_info.filename '.dopl3Dt'];        
-
+        recons_info.ecg_recons.filename=[acqui_info.filename '.dopl3Dt'];
+        
         OCT.acqui_info=acqui_info;
         OCT.recons_info=recons_info;
         save([OCT.input_dir, filesep, 'OCT.mat'],'OCT');
     end
+    catch exception
+        disp(exception.identifier)
+        disp(exception.stack(1))
+        out.OCTmat{acquisition} = job.OCTmat{acquisition};
+    end
 end
+
 if ishandle(wb);close(wb);drawnow;end
 out.OCTmat = OCTmat;
 end

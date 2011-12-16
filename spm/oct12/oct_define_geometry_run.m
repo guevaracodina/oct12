@@ -9,6 +9,7 @@ OCTmat=job.OCTmat;
 
 % Loop over acquisitions
 for acquisition=1:size(OCTmat,1)
+    try
     % At this point we only have acqui_info in this matrix, here we define
     % the reconstruction information
     load(OCTmat{acquisition});
@@ -100,6 +101,11 @@ for acquisition=1:size(OCTmat,1)
     
     OCT.recons_info = recons_info;
     save([OCT.input_dir, filesep, 'OCT.mat'],'OCT');
+    catch exception
+        disp(exception.identifier)
+        disp(exception.stack(1))
+        out.OCTmat{acquisition} = job.OCTmat{acquisition};
+    end
 end
 
 out.OCTmat = OCTmat;
