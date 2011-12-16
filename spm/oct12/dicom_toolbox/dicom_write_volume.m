@@ -45,6 +45,7 @@ if(~isstruct(info))
     info.SliceLocation=0;
 end
 
+
 % Remove filename extention
 pl=find(filename=='.'); if(~isempty(pl)), filename=filename(1:pl-1); end
 
@@ -57,7 +58,8 @@ for slicenum=1:size(Volume,3)
     info.SliceLocation = info.SliceLocation+volscale(3);
     % Write the dicom file
     disp(['Writing : ' filenamedicom]);
-    dicomwrite(Volume(:,:,slicenum), filenamedicom, info) ;
+    info.SOPClassUID = '1.2.840.10008.5.1.4.1.1.6.1';
+    dicomwrite(Volume(:,:,slicenum), filenamedicom, info, 'CreateMode', 'copy') ;
 	if(slicenum==1),
 		info2=dicominfo(filenamedicom);
         info.StudyInstanceUID=info2.StudyInstanceUID;
