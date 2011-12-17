@@ -23,12 +23,19 @@ OCTmat.ufilter = '^OCT.mat$';
 OCTmat.num     = [1 Inf];     % Number of inputs required 
 OCTmat.help    = {'Select OCT.mat for the scan.'}; % help text displayed
 
+redo1         = cfg_menu; % This is the generic data entry item
+redo1.name    = 'Force Redo?'; % The displayed name
+redo1.tag     = 'redo';       % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
+redo1.labels  = {'No', 'Yes'};     % Number of inputs required (2D-array with exactly one row and two column)
+redo1.values  = {0,1};
+redo1.val     = {0};
+redo1.help    = {'This option will force recomputation.'}; % help text displayed
 
 %% Executable Branch
 concatenate1      = cfg_exbranch;                               % This is the branch that has information about how to run this module
 concatenate1.name = 'Concatenate acqui info files';             % The display name
 concatenate1.tag  = 'oct_concatenate_cfg'; % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
-concatenate1.val  = {OCTmat};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
+concatenate1.val  = {OCTmat redo1};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
 concatenate1.prog = @oct_concatenate_run;  % A function handle that will be called with the harvested job to run the computation
 concatenate1.vout = @oct_concatenate_vout; % A function handle that will be called with the harvested job to determine virtual outputs
 concatenate1.help = {'Takes acquisition info saved by the OCT system and converts them to a single file.'};

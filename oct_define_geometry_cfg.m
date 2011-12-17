@@ -23,6 +23,13 @@ OCTmat.ufilter = '^OCT.mat$';
 OCTmat.num     = [1 Inf];     % Number of inputs required 
 OCTmat.help    = {'Select OCT.mat for the scan.'}; % help text displayed
 
+redo1         = cfg_menu; % This is the generic data entry item
+redo1.name    = 'Force Redo?'; % The displayed name
+redo1.tag     = 'redo';       % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
+redo1.labels  = {'No', 'Yes'};     % Number of inputs required (2D-array with exactly one row and two column)
+redo1.values  = {0,1};
+redo1.val     = {0};
+redo1.help    = {'This option will force recomputation.'}; % help text displayed
 
 %% Input Items for display mask
 surface1         = cfg_entry; % This is the generic data entry item
@@ -84,7 +91,7 @@ n_gates.help    = {'Number of gates over which the signal will be reconstructed 
 param3dhd1      = cfg_exbranch;                               % This is the branch that has information about how to run this module
 param3dhd1.name = 'Parameter definition for 3DHD reconstructions';             % The display name
 param3dhd1.tag  = 'oct_define_3DHD_parameters_cfg'; % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
-param3dhd1.val  = {OCTmat mask1 n_gates};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
+param3dhd1.val  = {OCTmat redo1 mask1 n_gates};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
 param3dhd1.prog = @oct_define_geometry_run;  % A function handle that will be called with the harvested job to run the computation
 param3dhd1.vout = @oct_define_geometry_vout; % A function handle that will be called with the harvested job to determine virtual outputs
 param3dhd1.help = {'Define geometry parameters for reconstruction.'};
