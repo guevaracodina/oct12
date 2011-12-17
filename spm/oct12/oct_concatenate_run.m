@@ -12,7 +12,7 @@ OCTmat=job.OCTmat;
 for acquisition=1:size(OCTmat,1)
     
     load(OCTmat{acquisition});
-    if( ~isfield(OCT.jobsdone,'concatenate') )
+    if( ~isfield(OCT.jobsdone,'concatenate') || job.redo )
         
         % This function will take the path to the first file of an acquisition and
         % determine how many files are part of the acquisition and concatenate all

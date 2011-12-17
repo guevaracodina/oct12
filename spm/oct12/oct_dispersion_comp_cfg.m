@@ -23,6 +23,14 @@ OCTmat.ufilter = '^OCT.mat$';
 OCTmat.num     = [1 Inf];     % Number of inputs required 
 OCTmat.help    = {'Select OCT.mat for the scan.'}; % help text displayed
 
+redo1         = cfg_menu; % This is the generic data entry item
+redo1.name    = 'Force Redo?'; % The displayed name
+redo1.tag     = 'redo';       % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
+redo1.labels  = {'No', 'Yes'};     % Number of inputs required (2D-array with exactly one row and two column)
+redo1.values  = {0,1};
+redo1.val     = {0};
+redo1.help    = {'This option will force recomputation.'}; % help text displayed
+
 %%
 
 enable2         = cfg_menu; % This is the generic data entry item
@@ -55,7 +63,7 @@ framenumbers1.help    = {'Input vector containing frame numbers to use for compe
 dispersion1      = cfg_exbranch;                               % This is the branch that has information about how to run this module
 dispersion1.name = 'Optimizes dispersion compensation';             % The display name
 dispersion1.tag  = 'oct_dispersion_comp_cfg'; % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
-dispersion1.val  = {OCTmat enable2 init_params1 framenumbers1};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
+dispersion1.val  = {OCTmat redo1 enable2 init_params1 framenumbers1};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
 dispersion1.prog = @oct_dispersion_comp_run;  % A function handle that will be called with the harvested job to run the computation
 dispersion1.vout = @oct_dispersion_comp_vout; % A function handle that will be called with the harvested job to determine virtual outputs
 dispersion1.help = {'Choses a frame and optimizes dispersion compensation.'};
