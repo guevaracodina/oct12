@@ -12,7 +12,15 @@ OCTmat=job.OCTmat;
 for acquisition=1:size(OCTmat,1)
     
     load(OCTmat{acquisition});
+    
     if( ~isfield(OCT.jobsdone,'concatenate') || job.redo )
+        % Create the output data tree if necessary, also use when creating
+        % more than one result tree
+        OCT.top_input_data_dir=job.input_data_topdir{1};
+        dirlen=size(OCT.top_input_data_dir,2);
+        [pathstr, temp]=fileparts(OCTmat{acquisition});
+        OCT.output_dir = fullfile(job.output_data_dir{1},pathstr(dirlen+1:end));
+        if ~exist(OCT.output_dir,'dir'),mkdir(OCT.output_dir);end
         
         % This function will take the path to the first file of an acquisition and
         % determine how many files are part of the acquisition and concatenate all
@@ -91,9 +99,11 @@ for acquisition=1:size(OCTmat,1)
                 end
             end
             OCT.acqui_info=acqui_info_all;
-            OCT.jobsdone.concatenate=1;
-            save([OCT.input_dir, filesep, 'OCT.mat'],'OCT');
         end
+
+        OCT.jobsdone.concatenate=1;
+        save(fullfile(OCT.output_dir,'OCT.mat'),'OCT');
+        OCTmat{acquisition}=fullfile(OCT.output_dir,'OCT.mat');
     end
 end
 

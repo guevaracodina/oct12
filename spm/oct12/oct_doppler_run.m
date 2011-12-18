@@ -158,15 +158,16 @@ for acquisition=1:size(OCTmat,1)
     vol.data=vol.data*wavelength/(4*pi)/acqui_info.line_period_us/1e-6;
     vol.data=vol.data/2; %This is the correction factor determined by the test on the fantom
     
+    [tmp_dir, tmp_fnm]=fileparts(acqui_info.filename);
     vol.set_maxmin(max(vol.data(:)),min(vol.data(:)));
     vol.data=(vol.data)/(max(vol.data(:))-min(vol.data(:)))*double(intmax('int16'));
-    vol.saveint16([acqui_info.filename '.dop13D']);
+    vol.saveint16(fullfile(OCT.output_dir,[tmp_fnm,'.dopl3D']));
     
     recons_info.date=date;
-    recons_info.dop_recons.filename=[acqui_info.filename '.dop13D'];
+    recons_info.dop_recons.filename=fullfile(OCT.output_dir,[tmp_fnm,'.dopl3D']);
     OCT.acqui_info=acqui_info;
     OCT.recons_info=recons_info;
-    save([OCT.input_dir, filesep, 'OCT.mat'],'OCT');
+    save(fullfile(OCT.output_dir, 'OCT.mat'),'OCT');
 end
 if ishandle(wb);close(wb);drawnow;end
 out.OCTmat = OCTmat;

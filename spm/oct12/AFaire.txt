@@ -1,8 +1,6 @@
 A faire:
 -Comment categoriser les animaux (AL-RC ou autre)
 -Mettre try-catch ou il faut, reflechir a l'utilisation
--Ajouter jobdone pour tous les modules
 -Revisiter la compensation de dispersion
 -Comment aller vers SPM pour stim vs vaisseau
 -Valider le vitesse
--Ajouter output_dir

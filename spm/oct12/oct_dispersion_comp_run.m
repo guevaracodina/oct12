@@ -22,11 +22,7 @@ for acquisition=1:size(OCTmat,1)
             [FrameData]=map_dat_file(OCT.acqui_info);
             type_of_acquisition=OCT.acqui_info.ramp_type;
             total_frames=OCT.acqui_info.nframes*OCT.acqui_info.nfiles;
-            filter_kernel=design_filter_kernel(OCT.recons_info.dop1_prop.kernel_sigma,...
-                OCT.acqui_info.line_period_us*1e-6);
-            %This is the amount of frames necessary to fit the filter kernel in
-            kernel_frame_overlap=floor(numel(filter_kernel)/OCT.acqui_info.dat_size(2));
-            
+             
             % Loop over frames to compensate
             dispersion_vec = [];
             for i=1:length(job.frames)
@@ -58,7 +54,7 @@ for acquisition=1:size(OCTmat,1)
             OCT.recons_info.dispersion.a=mean(dispersion_vec,1);
             figure;hist(dispersion_vec);
             OCT.jobsdone.dispersion_comp=1;
-            save([OCT.input_dir, filesep, 'OCT.mat'],'OCT');
+            save(fullfile(OCT.output_dir, 'OCT.mat'),'OCT');
         catch exception
             disp(exception.identifier)
             disp(exception.stack(1))

@@ -123,15 +123,17 @@ for acquisition=1:size(OCTmat,1)
             i_frame = i_frame+1;
         end
         % Images now reconstructed
-        
+        [tmp_dir, tmp_fnm]=fileparts(acqui_info.filename);
         vol.set_maxmin(max(vol.data(:)),min(vol.data(:)));
         vol.data=(vol.data-min(vol.data(:)))/(max(vol.data(:))-min(vol.data(:)))*double(intmax('int16'));
-        vol.saveint16([acqui_info.filename '.dop13D']);
+        vol.saveint16(fullfile(OCT.output_dir,[tmp_fnm,'.dopl3D']));
         
         lp_vol.set_maxmin(max(lp_vol.data(:)),min(lp_vol.data(:)));
         lp_vol.data=(lp_vol.data-min(lp_vol.data(:)))/(max(lp_vol.data(:))-min(lp_vol.data(:)))*double(intmax('int16'));
-        lp_vol.saveint16([acqui_info.filename '.dop13D_LP']);
+        lp_vol.saveint16(fullfile(OCT.output_dir,[tmp_fnm,'.dopl3D_LP']));
         
+        recons_info.angio_recons.filename=fullfile(OCT.output_dir,[tmp_fnm,'.dopl3D']);
+        recons_info.angio_recons.filename_lp=fullfile(OCT.output_dir,[tmp_fnm,'.dopl3D_LP']);
         
         recons_info.date=date;
         OCT.acqui_info=acqui_info;
