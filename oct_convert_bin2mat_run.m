@@ -37,7 +37,7 @@ for dir_index = 1:size(job.rawdata_dir,1)
 
     OCT.conv_info=conv_info;
     OCT.jobsdone.bin2mat=1;
-    save([OCT.input_dir, 'OCT.mat'],'OCT');
+    save(fullfile(OCT.input_dir, 'OCT.mat'),'OCT');
     OCTmat{dir_index}=[OCT.input_dir,'OCT.mat'];
 end
 out.OCTmat = OCTmat';

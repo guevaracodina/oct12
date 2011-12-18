@@ -22,7 +22,7 @@ for acquisition=1:size(OCTmat,1)
     vol=reshape(vol,[sizex 512 400]);
 
     OCT.recons_info=recons_info;
-    save([OCT.input_dir, filesep, 'OCT.mat'],'OCT');
+    save(fullfile(OCT.output_dir, 'OCT.mat'),'OCT');
 end
 
 out.OCTmat = OCTmat;

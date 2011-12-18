@@ -103,7 +103,7 @@ for acquisition=1:size(OCTmat,1)
             
             OCT.recons_info = recons_info;
             OCT.jobsdone.define_geometry=1;
-            save([OCT.input_dir, filesep, 'OCT.mat'],'OCT');
+            save(fullfile(OCT.output_dir, 'OCT.mat'),'OCT');
         catch exception
             disp(exception.identifier)
             disp(exception.stack(1))

@@ -90,15 +90,16 @@ for acquisition=1:size(OCTmat,1)
     % Images now reconstructed
     
     %Saving to disk
+    [tmp_dir, tmp_fnm]=fileparts(acqui_info.filename);
     vol.set_maxmin(max(vol.data(:)),min(vol.data(:)));
     vol.data=(vol.data-min(vol.data(:)))/(max(vol.data(:))-min(vol.data(:)))*double(intmax('int16'));
-    vol.saveint16([acqui_info.filename '.struct3D']);
+    vol.saveint16(fullfile(OCT.output_dir,[tmp_fnm,'.struct3D']));
     
     recons_info.date=date;
-    recons_info.struct_recons.filename=[acqui_info.filename '.struct3D'];
+    recons_info.struct_recons.filename=fullfile(OCT.output_dir,[tmp_fnm,'.struct3D']);
     OCT.acqui_info=acqui_info;
     OCT.recons_info=recons_info;
-    save([OCT.input_dir, filesep, 'OCT.mat'],'OCT');
+    save(fullfile(OCT.output_dir, 'OCT.mat'),'OCT');
 end
 if ishandle(wb);close(wb);drawnow;end
 out.OCTmat = OCTmat;

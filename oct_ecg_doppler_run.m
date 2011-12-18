@@ -171,16 +171,18 @@ for acquisition=1:size(OCTmat,1)
                 vol.data=vol.data*wavelength/(4*pi)/acqui_info.line_period_us/1e-6;
                 vol.data=vol.data/2; %This is the correction factor determined by the test on the fantom
                 
+                [tmp_dir, tmp_fnm]=fileparts(acqui_info.filename);
                 vol.set_maxmin(max(vol.data(:)),min(vol.data(:)));
                 vol.data=(vol.data-min(vol.data(:)))/(max(vol.data(:))-min(vol.data(:)))*double(intmax('int16'));
-                vol.saveint16([acqui_info.filename '.dopl3Dt']);
+                vol.saveint16(fullfile(OCT.output_dir,[tmp_fnm,'.dopl3Dt']));
                 
                 recons_info.date=date;
-                recons_info.ecg_recons.filename=[acqui_info.filename '.dopl3Dt'];
+                recons_info.ecg_recons.filename=fullfile(OCT.output_dir,[tmp_fnm,'.dopl3Dt']);
                 
                 OCT.acqui_info=acqui_info;
                 OCT.recons_info=recons_info;
-                save([OCT.input_dir, filesep, 'OCT.mat'],'OCT');
+                OCT.jobsdone.ecg_doppler = 1;
+                save(fullfile(OCT.output_dir, 'OCT.mat'),'OCT');
             end
         catch exception
             disp(exception.identifier)
@@ -188,7 +190,6 @@ for acquisition=1:size(OCTmat,1)
             out.OCTmat{acquisition} = job.OCTmat{acquisition};
         end
     end
-end
 end
 
 if ishandle(wb);close(wb);drawnow;end

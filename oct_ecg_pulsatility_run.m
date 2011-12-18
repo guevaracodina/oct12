@@ -7,11 +7,11 @@ rev = '$Rev$'; %#ok
 
 % Reference from previous computation.
 OCTmat=job.OCTmat;
-save_figure=job.save_figures;
+save_figures=job.save_figures;
 
 % Loop over acquisitions
 
-save_data=fullfile(job.pulse_data_dir,'vessel.txt');
+save_data=fullfile(job.pulse_data_dir{1},'vessel.txt');
 fid = fopen(save_data, 'w');
 fprintf(fid,'Name, Mean, Median, Std, Max, Min\n');
 
@@ -21,7 +21,7 @@ for acquisition=1:size(OCTmat,1)
     
     % If we save results, then they shoudl be saved locally to the data
     if save_figures
-        dir_fig = fullfile(OCT.input_dir,'fig');
+        dir_fig = fullfile(OCT.output_dir,'fig');
         if ~exist(dir_fig,'dir'),mkdir(dir_fig);end
     end
     % This reconstruction only works if the ECG data is recorded and we
@@ -49,6 +49,8 @@ for acquisition=1:size(OCTmat,1)
             tmp=squeeze(vol.data(:,:,i));
             vessel_time_course(i) = mean(tmp(mask));
         end
+        % Normalize to scale
+        vessel_time_course=vessel_time_course/double(intmax('int16'))*(vol.max_val-vol.min_val)+vol.min_val;
         
         subplot(1,2,2)
         plot(vessel_time_course);
@@ -63,7 +65,7 @@ for acquisition=1:size(OCTmat,1)
         median(vessel_time_course),std(vessel_time_course),max(vessel_time_course),min(vessel_time_course));
         OCT.acqui_info=acqui_info;
         OCT.recons_info=recons_info;
-        save([OCT.input_dir, filesep, 'OCT.mat'],'OCT');
+        save(fullfile(OCT.output_dir, 'OCT.mat'),'OCT');
     end
     catch exception
         disp(exception.identifier)
