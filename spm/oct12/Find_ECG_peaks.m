@@ -72,7 +72,7 @@ qrs_peak_pos=qrs_peak_pos(qrs_peak_pos>0);
 
 % This will fit a polynome on the data to estimate where the missing peaks
 % are
-P=polyfit(1:numel(qrs_peak_pos),qrs_peak_pos',4);
+P = polyfit(1:numel(qrs_peak_pos),qrs_peak_pos,4);  % Change row to column //EGC
 points_before_first=-2:0;
 peaks_before_first = polyval(P,points_before_first);
 points_after_last=numel(qrs_peak_pos)+[1:3];
