@@ -68,7 +68,7 @@ ref1.help    = {'This option will set which reference is used (measured or mean 
 %% Executable Branch
 reconstruct1      = cfg_exbranch;                 % This is the branch that has information about how to run this module
 reconstruct1.name = 'Reconstruct angiogram';     % The display name
-reconstruct1.tag  = 'oct_reconstruct_struct_cfg'; % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
+reconstruct1.tag  = 'oct_angiogram_cfg'; % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
 reconstruct1.val  = {OCTmat dop1 ref1};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
 reconstruct1.prog = @oct_angiogram_run;  % A function handle that will be called with the harvested job to run the computation
 reconstruct1.vout = @oct_angiogram_vout; % A function handle that will be called with the harvested job to determine virtual outputs
