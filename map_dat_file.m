@@ -21,8 +21,18 @@ if ~isfield(acqui_info,'dat_size');
 end
 
 if isfield(acqui_info,'nfiles')
+    fileList = dir([acqui_info.filename '*.mat']); % //EGC
     for file_number=1:acqui_info.nfiles
         start_frame=(file_number-1)*acqui_info.nframes+acqui_info.framenumber(1);
+        % Read start frame of each file //EGC
+        [start_idx, end_idx, extents, matches] = regexp(fileList(file_number).name,'[0-9]+.mat');
+        start_frame_file = str2double(matches{1}(1:end-4));
+        if start_frame ~= start_frame_file,
+            % Some files of the same scan do not have consecutive naming,
+            % need to verify this quick fix //EGC
+            start_frame = start_frame_file;
+        end
+
         FrameData{file_number}=memmapfile([acqui_info.filename '-' num2str(start_frame) '.dat'],...
             'Format',{'int16' acqui_info.dat_size 'frames'});
     end
