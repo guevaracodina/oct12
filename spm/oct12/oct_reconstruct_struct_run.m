@@ -52,6 +52,7 @@ for acquisition=1:size(OCTmat,1)
             num2str(total_frames) ', ' num2str(round(100*i_frame/total_frames))...
             '%']};
         if ishandle(wb);waitbar(i_frame/total_frames,wb,waitbarmessage);
+            fprintf([waitbarmessage{1} '\n']);
         else disp(waitbarmessage);end
         % END GUI PART
         
