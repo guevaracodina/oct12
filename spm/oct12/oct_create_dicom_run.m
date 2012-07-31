@@ -37,8 +37,8 @@ for acquisition=1:size(OCTmat,1)
         info.PixelSpacing=OCT.recons_info.step(1:2);
         info.SliceLocation=0;
         % Necessary if slicenum==1 //EGC
-        info.StudyInstanceUID=0;
-        info.SeriesInstanceUID=0;
+        info.StudyInstanceUID='111';
+        info.SeriesInstanceUID='111';
         tmp_vol=int16(tmp.data);
         dicom_write_volume(tmp_vol,[savedir, filesep, 'dicom_struct', filesep, 'Struct'], OCT.recons_info.step, info)
     end
