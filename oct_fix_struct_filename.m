@@ -59,13 +59,13 @@ folderList(ismember(folderList,{'.','..'})) = [];
 % Scans (FOV) loop
 for iScans = 1:length(folderList)
     currentFolder = fullfile(subjectFolder,folderList{iScans});
-    % Find .BIN files
+    % Find OCT.mat files
     d = dir(fullfile(currentFolder,'OCT.mat'));
     fileList = {d.name}';
     if isempty(fileList)
         fprintf('No OCT.mat files in folder %s\n',currentFolder)
     else
-        % Loop through all .bin files
+        % Loop through all OCT.mat files
         for iFiles=1:length(fileList)
             currentFile = fullfile(currentFolder,fileList{iFiles});
             load(currentFile);
@@ -75,7 +75,7 @@ for iScans = 1:length(folderList)
              if isempty(fileList)
                 fprintf('No .struct3d files in folder %s\n',currentFolder)
              else
-                % Add filename
+                % Add filename in OCT.mat
                 OCT.recons_info.struct_recons.filename = fullfile(currentFolder,structFileList{1});
                 save(currentFile, 'OCT');
              end
