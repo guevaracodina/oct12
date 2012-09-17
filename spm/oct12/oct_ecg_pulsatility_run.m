@@ -37,11 +37,21 @@ for acquisition=1:size(OCTmat,1)
         vol.openint16(recons_info.ecg_recons.filename);
         
         % put image of first frame
-        h=figure;
+        h=figure; set(gcf,'color','w')
         subplot(1,2,1)
         load doppler_color_map.mat
         colormap(doppler_color_map);
-        e=imagesc(squeeze(vol.data(:,:,1)));
+        
+        % build z, r axis to display scaled data //EGC
+        rAxis = 0:recons_info.step(1):recons_info.step(1)*(recons_info.size(1) - 1);
+        zAxis = 0:recons_info.step(2):recons_info.step(2)*(recons_info.size(2) - 1);
+        
+        % Prompt user to choose the ROI that contains a vessel
+        e=imagesc(zAxis,rAxis,squeeze(vol.data(:,:,1)));
+        title('Choose an ROI containing a vessel','interpreter','none')
+        xlabel([recons_info.type{2} ' [\mum]'],'FontSize',14);
+        ylabel([recons_info.type{1} ' [\mum]'],'FontSize',14);
+        set(gca,'FontSize',12)
         mask = roipoly;
        
         vessel_time_course=zeros(1,size(vol.data,3));
@@ -52,11 +62,30 @@ for acquisition=1:size(OCTmat,1)
         % Normalize to scale
         vessel_time_course=vessel_time_course/double(intmax('int16'))*(vol.max_val-vol.min_val)+vol.min_val;
         
+        % Build time axis (ms) //EGC
+        tAxis = 1e-3*(0:recons_info.dt_us:recons_info.dt_us*(recons_info.size(3) - 1));
+        
+        % Refresh display with correct orientation of B-scan //EGC
+        subplot(1,2,1)
+        e=imagesc(rAxis,zAxis,squeeze(vol.data(:,:,1))');
+        title([recons_info.type{1} ' Slice'],'FontSize',14,'interpreter','none')
+        ylabel([recons_info.type{2} ' [\mum]'],'FontSize',14);
+        xlabel([recons_info.type{1} ' [\mum]'],'FontSize',14);
+        set(gca,'FontSize',12)
+                
         subplot(1,2,2)
-        plot(vessel_time_course);
+        plot(tAxis, vessel_time_course);
+        xlabel('Time in cardiac cycle [ms]','FontSize',14);
+        ylabel([recons_info.type{1} ' Speed [mm/s]'],'FontSize',14);
+        xlim([min(tAxis) max(tAxis)]);
+        set(gca,'FontSize',12)
+        
         if (save_figures)
-            filen = fullfile(dir_fig,['ROI_pulse.tiff']); %save as .tiff
-            print(h, '-dtiffn', filen);
+            % filen = fullfile(dir_fig,['ROI_pulse.tiff']); %save as .tiff
+            % print(h, '-dtiffn', filen);
+            filen = fullfile(dir_fig,'ROI_pulse'); %save as .PNG
+            % Save as PNG (2x the resolution, ~8x smaller file size) //EGC
+            print(h, '-dpng', filen, '-r300');
         end
         close(h);
         
