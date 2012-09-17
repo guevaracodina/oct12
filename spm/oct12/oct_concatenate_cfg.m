@@ -36,7 +36,7 @@ top_data_dir         = cfg_files;
 top_data_dir.tag     = 'input_data_topdir';
 top_data_dir.name    = 'Top directory of raw data';
 top_data_dir.filter = 'dir'; 
-top_data_dir.num     = [1];
+top_data_dir.num     = [1 1];
 top_data_dir.help    = {'Select the directory at the top of the tree of the raw data.'}';
 
 %Select directory to save global results
@@ -44,7 +44,7 @@ output_data_dir         = cfg_files;
 output_data_dir.tag     = 'output_data_dir';
 output_data_dir.name    = 'Top directory to save group data';
 output_data_dir.filter = 'dir'; 
-output_data_dir.num     = [1];
+output_data_dir.num     = [1 1];
 output_data_dir.help    = {'Select the directory where consolidated results will be saved using the same directory tree as the raw data.'}';
 
 %% Executable Branch
