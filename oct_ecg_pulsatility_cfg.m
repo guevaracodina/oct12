@@ -28,7 +28,7 @@ save_data_dir         = cfg_files;
 save_data_dir.tag     = 'pulse_data_dir';
 save_data_dir.name    = 'Directory to save group data';
 save_data_dir.filter = 'dir'; 
-save_data_dir.num     = [1];
+save_data_dir.num     = [1 1];
 save_data_dir.help    = {'Select the directory where consolidated pulsatility data will be saved'}';
 
 %% Executable Branch
