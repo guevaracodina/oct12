@@ -86,6 +86,8 @@ for acquisition=1:size(OCTmat,1)
             filen = fullfile(dir_fig,'ROI_pulse'); %save as .PNG
             % Save as PNG (2x the resolution, ~8x smaller file size) //EGC
             print(h, '-dpng', filen, '-r300');
+            % Save as a figure
+            saveas(h, filen, 'fig');
         end
         close(h);
         
