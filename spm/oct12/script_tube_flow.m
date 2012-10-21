@@ -68,8 +68,10 @@ save(fullfile(dataFolder,'meanDoppler.mat'),'avgDoppler','doppler_color_map',...
 
 %% Plot results
 load('D:\Edgar\Data\OCT_Results\2012-10-05 - Fantom Tube\meanDoppler.mat')
+vMax = 870e-9 / (4e-6*acqui_info.line_period_us); % max velocity in (m/s)
 figure; set(gcf,'color','w')
 colormap(doppler_color_map)
+avgDoppler = vMax * avgDoppler * (max(avgDoppler(:)) - min(avgDoppler(:)))/ double(intmax('int16')); % in (mm/s)
 minVal = min(avgDoppler(:));
 maxVal = max(avgDoppler(:));
 for iPlots = 1:numel(folderList)
@@ -87,8 +89,57 @@ end
 subplot(3,4,iPlots+1);
 imagesc(rAxis(:,iPlots),zAxis(:,iPlots),...
         squeeze(avgDoppler(:,:,iPlots)),[minVal maxVal]);
-colorbar; cla; axis off;
+h = colorbar;
+ylabel(h, '[mm/s]', 'FontSize', 14);
+set(h, 'FontSize', 12)
+cla; axis off;
 
 %% Print graphics
 addpath(genpath('D:\Edgar\ssoct\Matlab'))
 export_fig(fullfile(dataFolder,'tube_uL_min'),'-png',gcf)
+export_fig(fullfile('D:\Edgar\Documents\Dropbox\Docs\fcOIS\2012_10_15_Report','tube_uL_min'),'-png',gcf) 
+
+%% Create mask
+load('D:\Edgar\Data\OCT_Results\2012-10-05 - Fantom Tube\meanDoppler.mat')
+load('D:\Edgar\Data\OCT_Data\2012-10-05 - Fantom Tube\020\X\Fantom Tube - 020_uL_min - Coupe selon X-4800.mat')
+% mask = ioi_roi_spline(squeeze(avgDoppler(:,:,10)),[],[],'Mark spline points, then right-click in it to create mask');
+
+
+% Compute flow
+nFrames = numel(folderList);
+realFlow = str2double(folderList);
+calcFlow = zeros(size(realFlow));
+meanDoppler = zeros(size(realFlow));
+stdDoppler =  zeros(size(realFlow));
+% PE-10 tube info
+rTube = (0.011*25.4)/2; % in (mm)
+rArea = pi*rTube^2; % in (mm^2)
+vMax = 870e-9 / (4e-6*acqui_info.line_period_us); % max velocity in (m/s)
+avgDoppler = vMax * avgDoppler * (max(avgDoppler(:)) - min(avgDoppler(:)))/ double(intmax('int16')); % in (mm/s)
+
+for iFrames = 1:nFrames,
+    tmpDoppler = squeeze(avgDoppler(:,:,iFrames));
+%     tmpDoppler = tmpDoppler.*(max(tmpDoppler(:))-min(tmpDoppler(:))) ./
+%     double(intmax('int16'));
+    meanDoppler(iFrames) = mean(tmpDoppler(mask));
+    stdDoppler(iFrames) = std(tmpDoppler(mask));
+end
+
+
+%% Plot flow results
+figure; set(gcf,'color','w')
+realDoppler = -realFlow / (rArea*1e3);
+h = errorbar(realDoppler, meanDoppler, stdDoppler, 'ks');
+set(h, 'MarkerFaceColor','k', 'LineWidth', 2)
+hold on
+plot(realDoppler, realDoppler, 'r--', 'LineWidth', 2)
+axis image
+title('Doppler velocity','FontSize',14)
+xlabel('Imposed velocity [mm/s]','FontSize',14);
+ylabel('Calculated velocity [mm/s]','FontSize',14);
+set(gca,'FontSize',12)
+
+%% Print graphics
+addpath(genpath('D:\Edgar\ssoct\Matlab'))
+export_fig(fullfile(dataFolder,'tube_vel_mm_s'),'-png',gcf)
+export_fig(fullfile('D:\Edgar\Documents\Dropbox\Docs\fcOIS\2012_10_15_Report','tube_vel_mm_s'),'-png',gcf) 
