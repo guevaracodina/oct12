@@ -45,7 +45,7 @@ dataFolder = 'E:\Edgar\Data\OCT_Data\';
 if ~exist(dataFolder,'dir')
     dataFolder = matlabroot;
 end
-if isempty(subjectFolder) || ~exist(subjectFolder,'var')
+if isempty(subjectFolder) || ~exist('subjectFolder','var')
     subjectFolder = uigetdir(dataFolder, 'Pick a subject directory');
     if subjectFolder == 0
         % User cancelled input

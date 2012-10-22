@@ -75,6 +75,7 @@ for acquisition=1:size(OCTmat,1)
                 
         subplot(1,2,2)
         plot(tAxis, vessel_time_course);
+        title(OCT.acqui_info.base_filename,'FontSize',14,'interpreter','none')
         xlabel('Time in cardiac cycle [ms]','FontSize',14);
         ylabel([recons_info.type{1} ' Speed [mm/s]'],'FontSize',14);
         xlim([min(tAxis) max(tAxis)]);
