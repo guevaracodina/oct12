@@ -70,6 +70,8 @@ for i=length(toofar):-1:1
 end
 qrs_peak_pos=qrs_peak_pos(qrs_peak_pos>0);
 
+% Turning off warning of ECG computation //EGC
+warning('off', 'MATLAB:polyfit:RepeatedPointsOrRescale')
 % This will fit a polynome on the data to estimate where the missing peaks
 % are
 P = polyfit(1:numel(qrs_peak_pos),qrs_peak_pos,4);  % Change row to column //EGC

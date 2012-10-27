@@ -55,7 +55,7 @@ if isempty(subjectFolder) || ~exist('subjectFolder','var')
 end
 
 tic
-fprintf('Arranging .BIN files in their corresponding folders...\n')
+fprintf('Arranging .BIN files of %s in their corresponding folders...\n', subjectFolder)
 
 % Separate subdirectories and files:
 d = dir(subjectFolder);

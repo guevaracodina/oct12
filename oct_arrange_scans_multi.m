@@ -41,6 +41,8 @@ dataFolder = optargs{:};
 % Check if dataFolder is a valid directory, else get current working dir
 if ~exist(dataFolder,'dir')
     dataFolder = pwd;
+else
+    cd(dataFolder)
 end
 
 % Separate subdirectories and files:
