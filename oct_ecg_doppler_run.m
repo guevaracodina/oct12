@@ -47,7 +47,7 @@ for acquisition=1:size(OCTmat,1)
                 %% This is the timer used for the waitbar time remaining estimation
                 ETA_text='Starting reconstruction';
                 
-                for i_frame=1:total_frames;
+                for i_frame=1:total_frames,
                     if i_frame>size(recons_info.A_line_position,2)
                         warning('Requested frame number exceeds number of frames, please verify')
                         keyboard
@@ -70,7 +70,8 @@ for acquisition=1:size(OCTmat,1)
 %                     else;disp(waitbarmessage);end
                     
                     % Display acquisition number //EGC
-                    if ishandle(wb);waitbar(i_frame/total_frames,wb,waitbarmessage);
+                    if ishandle(wb),
+                        waitbar(i_frame/total_frames,wb,waitbarmessage);
                         if i_frame==1
                             % Display message only the first frame //EGC
                             fprintf([waitbarmessage{1} '\n']);
