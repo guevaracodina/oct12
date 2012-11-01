@@ -1,7 +1,11 @@
-function [periods_after_qrs_peak,bpm]=Find_ECG_peaks(acqui_info,display_plots);
+function [periods_after_qrs_peak,bpm]=Find_ECG_peaks(acqui_info,display_plots)
 %this will find the peaks in the qrs complexes of an ecg signal
 %it will also create a vector that describes the time after the qrs peak
 %for all the a-lines
+%_______________________________________________________________________________
+% Copyright (C) 2012 LIOM Laboratoire d'Imagerie Optique et Moléculaire
+%                    École Polytechnique de Montréal
+%_______________________________________________________________________________
 
 threshold=.5; %this is the fraction of the highest peak each peak must be to be detected
 max_bpm=800; % this is the maximum bpm an animal can reach
@@ -142,6 +146,8 @@ if display_plots
 end
 try %PP
     periods_after_qrs_peak=reshape(time_after_qrs_peak,m,n);
-catch
+catch exception
+    disp(exception.identifier)
+    disp(exception.stack(1))
     periods_after_qrs_peak=0;
 end

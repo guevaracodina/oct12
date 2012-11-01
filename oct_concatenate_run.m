@@ -2,6 +2,10 @@ function out = oct_concatenate_run(job)
 % At this point, the folder contains a list of dat and mat files
 % respectively containing acquisition information and data. This module
 % will concatenate the acquisition info.
+%_______________________________________________________________________________
+% Copyright (C) 2012 LIOM Laboratoire d'Imagerie Optique et Moléculaire
+%                    École Polytechnique de Montréal
+%_______________________________________________________________________________
 
 rev = '$Rev$'; %#ok
 
@@ -10,108 +14,113 @@ OCTmat=job.OCTmat;
 
 % Loop over acquisitions
 for acquisition=1:size(OCTmat,1)
-    
-    load(OCTmat{acquisition});
-    
-    if( ~isfield(OCT.jobsdone,'concatenate') || job.redo )
-        % Create the output data tree if necessary, also use when creating
-        % more than one result tree
-        OCT.top_input_data_dir=job.input_data_topdir{1};
-        dirlen=size(OCT.top_input_data_dir,2);
-        [pathstr, temp]=fileparts(OCTmat{acquisition});
-        OCT.output_dir = fullfile(job.output_data_dir{1},pathstr(dirlen+1:end));
-        if ~exist(OCT.output_dir,'dir'),mkdir(OCT.output_dir);end
+    try % //EGC
+        load(OCTmat{acquisition});
         
-        % This function will take the path to the first file of an acquisition and
-        % determine how many files are part of the acquisition and concatenate all
-        % the information into only one acqui_info file
-        % If the work is done, then the dir below will give zero and nothing is
-        % done.
-        acquifiles = dir([OCT.input_dir,'*0.mat']);
-        if (length(acquifiles)>0)   
-            filename_first_file=acquifiles(1).name;
+        if( ~isfield(OCT.jobsdone,'concatenate') || job.redo )
+            % Create the output data tree if necessary, also use when creating
+            % more than one result tree
+            OCT.top_input_data_dir=job.input_data_topdir{1};
+            dirlen=size(OCT.top_input_data_dir,2);
+            [pathstr, temp]=fileparts(OCTmat{acquisition});
+            OCT.output_dir = fullfile(job.output_data_dir{1},pathstr(dirlen+1:end));
+            if ~exist(OCT.output_dir,'dir'),mkdir(OCT.output_dir);end
             
-            % Loads first acqui_info
-            load([OCT.input_dir filename_first_file])
-            
-            % Strip extension
-            [pathname_temp,filename_temp,ext]=fileparts([OCT.input_dir filename_first_file]);
-            acqui_info.filename=[pathname_temp filesep filename_temp];
-            
-            % This will verify that the properties that are written in the
-            % acqui_info structure correspond to the  actual properties of the
-            % acquisition
-            type=identifity_acquisition_type(filename_temp);
-            if findstr(filename_temp,'Coupe selon');acqui_info.ramp_type=1;end
-            if findstr(filename_temp,'3D rev fast axis');acqui_info.ramp_type=4;end
-            if findstr(filename_temp,'3D HD');acqui_info.ramp_type=6;end
-            if findstr(filename_temp,'Fantom');acqui_info.ecg=0;end
-            
-            if acqui_info.ecg==1&&~isfield(acqui_info,'bpm')&&isfield(acqui_info,'ecg_signal')
-                [temp,acqui_info.bpm]=Find_ECG_peaks(acqui_info,0);
-            end
-            
-            %This will clean up the FOV values to make sure everything is round to
-            %the um
-            acqui_info=check_FOV(acqui_info);
-            
-            switch acqui_info.ramp_type
-                case 4
-                    if ~isfield(acqui_info,'rev_fast_axis')
-                        if findstr(filename_temp,'3D rev fast axis')
-                            acqui_info.rev_fast_axis=1;
-                        else
-                            acqui_info.rev_fast_axis=0;
-                        end
-                    end
-                case 6
-                    if ~isfield(acqui_info,'HD_info')
-                        acqui_info.HD_info.slicesperfile=10;
-                        acqui_info.HD_info.framesperslice=40;
-                    end
-            end
-            
-            % This will determine the base_filename that will be used to find the other
-            % files of the acquisition
-            first_frame=acqui_info.framenumber(1);
-            base_filename=filename_first_file;
-            %base_filename=regexprep(filename_first_file,[num2str(first_frame) '.mat'],'');
-            tmp_pos=regexp(base_filename,'[0-9]+.mat');
-            first_frame_number=str2num(base_filename(tmp_pos:end-4));
-            base_filename=base_filename(1:tmp_pos-1);
-            
-            acq_files=dir([OCT.input_dir base_filename,'*.mat']);
-            base_filename_clean=clean_base_filename(base_filename);
-            
-            % This declares a new acqui_info for the complete acquisition,
-            % remove ecg that will be concatenated below.
-            acqui_info_all=acqui_info;
-            if (acqui_info.version>3 && isfield(acqui_info_all,'ecg_signal'))
-                acqui_info_all=rmfield(acqui_info_all,'ecg_signal');
-            end
-            % Add names that will be used for the concatenated acqui_info file
-            acqui_info_all.filename=[OCT.input_dir base_filename_clean];
-            acqui_info_all.base_filename=base_filename;
-            acqui_info_all.nfiles=length(acq_files);
-            acqui_info_all.first_frame_number=first_frame_number;
-            
-            % Load each file, add ECGs and move to Backup.
-            for i=1:length(acq_files)
-                load([OCT.input_dir, acq_files(i).name]);
-                if (acqui_info.version>3 && isfield(acqui_info,'ecg_signal'))
-                    % We also concatenate all the ecg information into the
-                    % acqui_info_all structure
-                    acqui_info_all.ecg_signal{i}=acqui_info.ecg_signal;
+            % This function will take the path to the first file of an acquisition and
+            % determine how many files are part of the acquisition and concatenate all
+            % the information into only one acqui_info file
+            % If the work is done, then the dir below will give zero and nothing is
+            % done.
+            acquifiles = dir([OCT.input_dir,'*0.mat']);
+            if (length(acquifiles)>0)
+                filename_first_file=acquifiles(1).name;
+                
+                % Loads first acqui_info
+                load([OCT.input_dir filename_first_file])
+                
+                % Strip extension
+                [pathname_temp,filename_temp,ext]=fileparts([OCT.input_dir filename_first_file]);
+                acqui_info.filename=[pathname_temp filesep filename_temp];
+                
+                % This will verify that the properties that are written in the
+                % acqui_info structure correspond to the  actual properties of the
+                % acquisition
+                type=identifity_acquisition_type(filename_temp);
+                if findstr(filename_temp,'Coupe selon');acqui_info.ramp_type=1;end
+                if findstr(filename_temp,'3D rev fast axis');acqui_info.ramp_type=4;end
+                if findstr(filename_temp,'3D HD');acqui_info.ramp_type=6;end
+                if findstr(filename_temp,'Fantom');acqui_info.ecg=0;end
+                
+                if acqui_info.ecg==1&&~isfield(acqui_info,'bpm')&&isfield(acqui_info,'ecg_signal')
+                    [temp,acqui_info.bpm]=Find_ECG_peaks(acqui_info,0);
                 end
+                
+                %This will clean up the FOV values to make sure everything is round to
+                %the um
+                acqui_info=check_FOV(acqui_info);
+                
+                switch acqui_info.ramp_type
+                    case 4
+                        if ~isfield(acqui_info,'rev_fast_axis')
+                            if findstr(filename_temp,'3D rev fast axis')
+                                acqui_info.rev_fast_axis=1;
+                            else
+                                acqui_info.rev_fast_axis=0;
+                            end
+                        end
+                    case 6
+                        if ~isfield(acqui_info,'HD_info')
+                            acqui_info.HD_info.slicesperfile=10;
+                            acqui_info.HD_info.framesperslice=40;
+                        end
+                end
+                
+                % This will determine the base_filename that will be used to find the other
+                % files of the acquisition
+                first_frame=acqui_info.framenumber(1);
+                base_filename=filename_first_file;
+                %base_filename=regexprep(filename_first_file,[num2str(first_frame) '.mat'],'');
+                tmp_pos=regexp(base_filename,'[0-9]+.mat');
+                first_frame_number=str2num(base_filename(tmp_pos:end-4));
+                base_filename=base_filename(1:tmp_pos-1);
+                
+                acq_files=dir([OCT.input_dir base_filename,'*.mat']);
+                base_filename_clean=clean_base_filename(base_filename);
+                
+                % This declares a new acqui_info for the complete acquisition,
+                % remove ecg that will be concatenated below.
+                acqui_info_all=acqui_info;
+                if (acqui_info.version>3 && isfield(acqui_info_all,'ecg_signal'))
+                    acqui_info_all=rmfield(acqui_info_all,'ecg_signal');
+                end
+                % Add names that will be used for the concatenated acqui_info file
+                acqui_info_all.filename=[OCT.input_dir base_filename_clean];
+                acqui_info_all.base_filename=base_filename;
+                acqui_info_all.nfiles=length(acq_files);
+                acqui_info_all.first_frame_number=first_frame_number;
+                
+                % Load each file, add ECGs and move to Backup.
+                for i=1:length(acq_files)
+                    load([OCT.input_dir, acq_files(i).name]);
+                    if (acqui_info.version>3 && isfield(acqui_info,'ecg_signal'))
+                        % We also concatenate all the ecg information into the
+                        % acqui_info_all structure
+                        acqui_info_all.ecg_signal{i}=acqui_info.ecg_signal;
+                    end
+                end
+                OCT.acqui_info=acqui_info_all;
             end
-            OCT.acqui_info=acqui_info_all;
+            
+            OCT.jobsdone.concatenate=1;
+            save(fullfile(OCT.output_dir,'OCT.mat'),'OCT');
+            OCTmat{acquisition}=fullfile(OCT.output_dir,'OCT.mat');
         end
-
-        OCT.jobsdone.concatenate=1;
-        save(fullfile(OCT.output_dir,'OCT.mat'),'OCT');
-        OCTmat{acquisition}=fullfile(OCT.output_dir,'OCT.mat');
+    catch exception
+        disp(exception.identifier)
+        disp(exception.stack(1))
+        out.OCTmat{acquisition} = job.OCTmat{acquisition};
     end
-end
+end % Acquisitions looop
 
 out.OCTmat = OCTmat;
 end
