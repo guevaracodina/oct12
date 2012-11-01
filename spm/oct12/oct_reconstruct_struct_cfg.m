@@ -23,6 +23,13 @@ OCTmat.ufilter = '^OCT.mat$';
 OCTmat.num     = [1 Inf];     % Number of inputs required 
 OCTmat.help    = {'Select OCT.mat for the scan.'}; % help text displayed
 
+redo1         = cfg_menu; % This is the generic data entry item
+redo1.name    = 'Force Redo?'; % The displayed name
+redo1.tag     = 'redo';       % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
+redo1.labels  = {'No', 'Yes'};     % Number of inputs required (2D-array with exactly one row and two column)
+redo1.values  = {0,1};
+redo1.val     = {0};
+redo1.help    = {'This option will force recomputation.'}; % help text displayed
 
 ref1         = cfg_menu; % This is the generic data entry item
 ref1.name    = 'Which signal to use as reference?'; % The displayed name
@@ -37,7 +44,7 @@ ref1.help    = {'This option will set which reference is used (measured or mean 
 reconstruct1      = cfg_exbranch;                               % This is the branch that has information about how to run this module
 reconstruct1.name = 'Reconstruct structural';             % The display name
 reconstruct1.tag  = 'oct_reconstruct_struct_cfg'; % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
-reconstruct1.val  = {OCTmat ref1};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
+reconstruct1.val  = {OCTmat redo1 ref1};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
 reconstruct1.prog = @oct_reconstruct_struct_run;  % A function handle that will be called with the harvested job to run the computation
 reconstruct1.vout = @oct_reconstruct_struct_vout; % A function handle that will be called with the harvested job to determine virtual outputs
 reconstruct1.help = {'Start from preprocessed data and reconstructs structural acquisition.'};

@@ -3,7 +3,7 @@ function out = oct_convert_bin2mat_run(job)
 % which are memmap versions of the data. A choice was made to do this in
 % place so that no copy of the data is done.
 
-rev = '$Rev$'; 
+rev = '$Rev$';
 
 % This function will convert all the .bin files in a directory to the .dat
 % and .mat standard. After this, we don't need to rerun since no data is
@@ -12,34 +12,39 @@ rev = '$Rev$';
 OCTmat={};
 
 for dir_index = 1:size(job.rawdata_dir,1)
-    
-    directory=job.rawdata_dir{dir_index}; 
-    OCT.input_dir=directory;
-   
-    % If already converted, this will run fast
-    disp(['Converting bin files'])
-    
-    %This will process the files in the specified directory
-    n_files=0;
-    clear filenames
-    current_folder=dir(directory);
-    for j=1:length(current_folder)
-        if strfind(current_folder(j).name,'.bin')
-            n_files=n_files+1;
-            filenames{n_files}=current_folder(j).name;
+    try % //EGC
+        directory=job.rawdata_dir{dir_index};
+        OCT.input_dir=directory;
+        
+        % If already converted, this will run fast
+        disp(['Converting bin files'])
+        
+        %This will process the files in the specified directory
+        n_files=0;
+        clear filenames
+        current_folder=dir(directory);
+        for j=1:length(current_folder)
+            if strfind(current_folder(j).name,'.bin')
+                n_files=n_files+1;
+                filenames{n_files}=current_folder(j).name;
+            end
         end
+        if n_files>0
+            [conv_info]=Process_bin2dat(filenames,[directory filesep]);
+        else
+            conv_info=0;
+        end
+        
+        OCT.conv_info=conv_info;
+        OCT.jobsdone.bin2mat=1;
+        save(fullfile(OCT.input_dir, 'OCT.mat'),'OCT');
+        OCTmat{dir_index}=[OCT.input_dir,'OCT.mat'];
+    catch exception % //EGC
+        disp(exception.identifier)
+        disp(exception.stack(1))
+        out.OCTmat = [OCT.input_dir,'OCT.mat'];
     end
-    if n_files>0
-        [conv_info]=Process_bin2dat(filenames,[directory filesep]);
-    else
-        conv_info=0;
-    end
-
-    OCT.conv_info=conv_info;
-    OCT.jobsdone.bin2mat=1;
-    save(fullfile(OCT.input_dir, 'OCT.mat'),'OCT');
-    OCTmat{dir_index}=[OCT.input_dir,'OCT.mat'];
-end
+end % Folders loop
 out.OCTmat = OCTmat';
 
 function [conversion_info]=Process_bin2dat(filenames,path);

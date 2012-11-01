@@ -10,10 +10,9 @@ OCTmat=job.OCTmat;
 wb=waitbar(0,'');
 % Loop over acquisitions
 for acquisition=1:size(OCTmat,1)
-    
-    load(OCTmat{acquisition});
-    if( ~isfield(OCT.jobsdone,'ecg_doppler') || job.redo )
-        try
+    try % //EGC
+        load(OCTmat{acquisition});
+        if ~isfield(OCT.jobsdone,'ecg_doppler') || job.redo
             % This reconstruction only works if the ECG data is recorded and we
             % have a 2D ramp type
             if( OCT.acqui_info.ramp_type == 1)
@@ -66,8 +65,8 @@ for acquisition=1:size(OCTmat,1)
                         [ETA_text  ', Frame ' num2str(i_frame) ' of '...
                         num2str(total_frames) ', ' num2str(round(100*i_frame/total_frames))...
                         '%']};
-%                     if ishandle(wb);waitbar(i_frame/total_frames,wb,waitbarmessage);
-%                     else;disp(waitbarmessage);end
+                    %                     if ishandle(wb);waitbar(i_frame/total_frames,wb,waitbarmessage);
+                    %                     else;disp(waitbarmessage);end
                     
                     % Display acquisition number //EGC
                     if ishandle(wb),
@@ -146,6 +145,14 @@ for acquisition=1:size(OCTmat,1)
                     %the A_line_position variable
                     current_position=squeeze(recons_info.A_line_position(:,i_frame,:));
                     
+                    % Sometimes current A-line position is greater than N ECG gates
+                    % //EGC
+                    if any( current_position(:,2) > OCT.recons_info.number_of_time_gates)
+                        fprintf('Error in frame %d, %s\nA-line position greater than %d\n',...
+                            i_frame, acqui_info.base_filename, OCT.recons_info.number_of_time_gates)
+                        % Take former position
+                        current_position(:,2) = squeeze(recons_info.A_line_position(:,i_frame-1,2));
+                    end
                     
                     % Do operations in linear space for speed.
                     ii=repmat(current_position(:,1),[1 size(vol.data,2)])';
@@ -198,16 +205,17 @@ for acquisition=1:size(OCTmat,1)
                 OCT.jobsdone.ecg_doppler = 1;
                 save(fullfile(OCT.output_dir, 'OCT.mat'),'OCT');
             end
-        catch exception
-            disp(exception.identifier)
-            disp(exception.stack(1))
-            out.OCTmat{acquisition} = job.OCTmat{acquisition};
         end
+    catch exception
+        disp(exception.identifier)
+        disp(exception.stack(1))
+        out.OCTmat{acquisition} = job.OCTmat{acquisition};
     end
-end
+end % Acquisitions loop
 
 if ishandle(wb);close(wb);drawnow;end
 out.OCTmat = OCTmat;
 end
 
+% EOF
 
