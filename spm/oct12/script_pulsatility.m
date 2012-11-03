@@ -1,4 +1,4 @@
-function script_pulsatility
+% script_pulsatility
 %% Script map reconstructed Doppler & Structural files
 addpath(genpath('D:\spm8\toolbox\oct12'))
 addpath(genpath('D:\spm8\toolbox\pat12'))
@@ -210,24 +210,6 @@ text(ty(systole_positionY+2), 1.02*mean(pulseY),...
 %% Save PNG
 export_fig(fullfile(figsFolder, [OCT.acqui_info.base_filename 'speed_profile']),'-png',gcf)
 % ------------------------------------------------------------------------------
-%% Save as NiFTi
-dim = size(meanDoppler);
-dt = [spm_type('float64') spm_platform('bigend')];
-pinfo = ones(3,1);
-% Affine transformation matrix: Scaling
-matScaling = eye(4);
-matScaling(1,1) = recons_info.step(3);
-matScaling(2,2) = recons_info.step(1);
-matScaling(3,3) = recons_info.step(2);
-% Affine transformation matrix: Rotation
-matRotation = eye(4);
-% matRotation(1,1) = 0;
-% matRotation(1,2) = 1;
-% matRotation(2,1) = -1;
-% matRotation(2,2) = 0;
-% Final Affine transformation matrix: 
-mat = matScaling*matRotation;
 
-hdrDoppler = pat_create_vol(fullfile(pathName,'DopplerNIfTI.nii'), dim, dt, pinfo, mat, 1,...
-        meanDoppler);
+% EOF
 
