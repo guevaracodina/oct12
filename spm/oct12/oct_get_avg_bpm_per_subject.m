@@ -1,4 +1,4 @@
-function [avg_bpm bpm] = oct_get_avg_bpm(varargin)
+function bpm_avg = oct_get_avg_bpm_per_subject(varargin)
 %_______________________________________________________________________________
 % Copyright (C) 2012 LIOM Laboratoire d'Imagerie Optique et Moléculaire
 %                    École Polytechnique de Montréal
@@ -7,7 +7,7 @@ function [avg_bpm bpm] = oct_get_avg_bpm(varargin)
 % only want 1 optional input at most
 numvarargs = length(varargin);
 if numvarargs > 1
-    error('oct_get_avg_bpm:TooManyInputs', ...
+    error('oct_get_avg_bpm_per_subject:TooManyInputs', ...
         'Requires at most 1 optional input');
 end
 
@@ -21,7 +21,7 @@ optargs(1:numvarargs) = varargin;
 % Place optional args in memorable variable names
 subjectFolder = optargs{:};
 
-% Top folder containing all subjects results (change as needed)
+% Top folder containing all subjects data (change as needed)
 dataFolder = 'E:\Edgar\Data\OCT_Results\';
 
 if ~exist(dataFolder,'dir')
@@ -37,7 +37,7 @@ if isempty(subjectFolder) || ~exist('subjectFolder','var')
 end
 
 tic
-fprintf('Computing average cardiac bpm...\n')
+fprintf('Retrieving ECG information...\n')
 
 % Separate subdirectories and files:
 d = dir(subjectFolder);
@@ -65,29 +65,14 @@ end
 
 % Preallocate data
 bpm = zeros(size(scanList));
-% 2D scans index
-scanIdx = true(size(scanList));
 % Retrieve OCT.mat
 for iScans = 1:numel(scanList),
     load(fullfile(scanList{iScans}, 'OCT.mat'))
-    if isfield(OCT, 'acqui_info')
-        bpm(iScans) = OCT.acqui_info.bpm;
-    else
-        bpm(iScans) = NaN;
-    end
-    if ~isempty(regexp(scanList{iScans},'3D','match', 'once'))
-        scanIdx(iScans) = false;
-    end
+    bpm(iScans) = OCT.acqui_info.bpm;
 end
 
 % Mean bpm of subject
-avg_bpm = nanmean(bpm);
-
-% Keep only 2D scans for pulsatility
-bpm = bpm(scanIdx);
-
-[~, iD, ~] = fileparts(subjectFolder);
-fprintf('%.2f bpm for %s\n', avg_bpm, iD)
-disp(['Elapsed time: ' datestr(datenum(0,0,0,0,0,toc),'HH:MM:SS')]);
+bpm_avg = nanmean(bpm);
+fprintf('Average bpm = %0.2f for %s\n',bpm_avg,subjectFolder)
 
 % EOF
