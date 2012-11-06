@@ -4,8 +4,11 @@ function cfg = cfg_oct_processing
 % This code is part of a batch job configuration system for MATLAB. See 
 %      help matlabbatch
 % for a general overview.
-%_______________________________________________________________________
-% Copyright (C) 2011 Laboratoire d'Imagerie Optique et Moleculaire
+%_______________________________________________________________________________
+% Copyright (C) 2012 LIOM Laboratoire d'Imagerie Optique et Moléculaire
+%                    École Polytechnique de Montréal
+%_______________________________________________________________________________
+
 
 % F Lesage
 % $Id$
@@ -19,9 +22,9 @@ rev = '$Rev$'; %#ok
 preproc        = cfg_repeat; % A repeat collects a variable number of items from its .values field in its .val field
 preproc.name   = 'Preprocessing';
 preproc.tag    = 'preproc';
-preproc.values = {oct_convert_bin2mat_cfg oct_concatenate_cfg}; % Config files for all preprocessing modules
+preproc.values = {oct_arrange_scans_cfg oct_convert_bin2mat_cfg oct_concatenate_cfg}; % Config files for all preprocessing modules
 preproc.forcestruct = true; % There is a speciality in cfg_repeat harvest behaviour that makes a difference depending on the number of elements in values. forcestruct == true forces the repeat to behave as if there are more than one distinct values, even if there is only one.
-preproc.help   = {'All functions used for data preprocessing are collected in this module'};
+preproc.help   = {'All functions used for data preprocessing are collected in this module.'};
 
 %% Modules to process the OCT per-se
 proc        = cfg_repeat;

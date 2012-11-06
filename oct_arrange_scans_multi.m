@@ -3,9 +3,11 @@ function oct_arrange_scans_multi(varargin)
 % folder; each scan is stored in directories called X, Y and 3D, depending on
 % the type of scan
 % SYNTAX
-% oct_arrange_scans_multi(dataFolder)
-% INPUT 
+% oct_arrange_scans_multi(dataFolder, chooseSubjectDir)
+% INPUTS
 % dataFolder        Optional directory to start off in
+% chooseSubjectDir  If true, a dialog is open to choose individual subject
+%                   folders, else all subjects are processed
 % OUTPUT 
 % None              .BIN files are organized as follows:
 % 
@@ -23,20 +25,20 @@ function oct_arrange_scans_multi(varargin)
 
 % only want 1 optional input at most
 numvarargs = length(varargin);
-if numvarargs > 1
+if numvarargs > 2
     error('oct_arrange_scans_multi:TooManyInputs', ...
-        'Requires at most 1 optional input');
+        'Requires at most 2 optional inputs');
 end
 
 % set defaults for optional inputs
-optargs = {'E:\Edgar\Data\OCT_Data\'};
+optargs = {'E:\Edgar\Data\OCT_Data\' false};
 
 % now put these defaults into the optargs cell array, and overwrite the ones
 % specified in varargin.
 optargs(1:numvarargs) = varargin;
 
 % Place optional args in memorable variable names
-dataFolder = optargs{:};
+[dataFolder chooseSubjectDir]= optargs{:};
 
 % Check if dataFolder is a valid directory, else get current working dir
 if ~exist(dataFolder,'dir')
@@ -48,12 +50,16 @@ end
 % Separate subdirectories and files:
 d = dir(dataFolder);
 isub = [d(:).isdir];            % Returns logical vector
-folderList = {d(isub).name}';
+subjectList = {d(isub).name}';
 % Remove . and ..
-folderList(ismember(folderList,{'.','..'})) = [];
+subjectList(ismember(subjectList,{'.','..'})) = [];
 
 %% Choose the subjects folders
-[subjectList, sts] = cfg_getfile(Inf,'dir','Select subject folders',folderList, dataFolder, '.*'); %dataFolder
+if chooseSubjectDir
+    [subjectList, sts] = cfg_getfile(Inf,'dir','Select subject folders',subjectList, dataFolder, '.*'); %dataFolder
+else
+    sts = true;
+end
 
 %% Arrange scans for every subject folder
 if sts
