@@ -54,7 +54,6 @@ if isempty(subjectFolder) || ~exist('subjectFolder','var')
     end
 end
 
-tic
 fprintf('Arranging .BIN files of %s in their corresponding folders...\n', subjectFolder)
 
 % Separate subdirectories and files:
@@ -96,7 +95,7 @@ for iScans = 1:length(folderList)
     end
 end
 fprintf('Arranging .BIN files done!\n')
-disp(['Elapsed time: ' datestr(datenum(0,0,0,0,0,toc),'HH:MM:SS')]);
+
 
 function fileType = oct_check_file_type(currentFile)
 % Determines type of scan (X, Y, 3D) (ignores case)
