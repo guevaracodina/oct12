@@ -17,6 +17,12 @@ for acquisition=1:size(OCTmat,1)
     try % //EGC
         load(OCTmat{acquisition});
         
+        % Fix for when we change the location of the data
+        [d f e]=fileparts(OCTmat{acquisition});
+        if (~strcmp(OCT.input_dir,d))
+            OCT.input_dir = d;
+        end
+            
         if( ~isfield(OCT.jobsdone,'concatenate') || job.redo )
             % Create the output data tree if necessary, also use when creating
             % more than one result tree
@@ -31,15 +37,15 @@ for acquisition=1:size(OCTmat,1)
             % the information into only one acqui_info file
             % If the work is done, then the dir below will give zero and nothing is
             % done.
-            acquifiles = dir([OCT.input_dir,'*0.mat']);
+            acquifiles = dir(fullfile(OCT.input_dir,'*0.mat'));
             if (length(acquifiles)>0)
                 filename_first_file=acquifiles(1).name;
                 
                 % Loads first acqui_info
-                load([OCT.input_dir filename_first_file])
+                load(fullfile(OCT.input_dir,filename_first_file))
                 
                 % Strip extension
-                [pathname_temp,filename_temp,ext]=fileparts([OCT.input_dir filename_first_file]);
+                [pathname_temp,filename_temp,ext]=fileparts(fullfile(OCT.input_dir,filename_first_file));
                 acqui_info.filename=[pathname_temp filesep filename_temp];
                 
                 % This will verify that the properties that are written in the
@@ -84,7 +90,7 @@ for acquisition=1:size(OCTmat,1)
                 first_frame_number=str2num(base_filename(tmp_pos:end-4));
                 base_filename=base_filename(1:tmp_pos-1);
                 
-                acq_files=dir([OCT.input_dir base_filename,'*.mat']);
+                acq_files=dir(fullfile(OCT.input_dir,[base_filename,'*.mat']));
                 base_filename_clean=clean_base_filename(base_filename);
                 
                 % This declares a new acqui_info for the complete acquisition,
@@ -94,14 +100,14 @@ for acquisition=1:size(OCTmat,1)
                     acqui_info_all=rmfield(acqui_info_all,'ecg_signal');
                 end
                 % Add names that will be used for the concatenated acqui_info file
-                acqui_info_all.filename=[OCT.input_dir base_filename_clean];
+                acqui_info_all.filename=fullfile(OCT.input_dir,base_filename_clean);
                 acqui_info_all.base_filename=base_filename;
                 acqui_info_all.nfiles=length(acq_files);
                 acqui_info_all.first_frame_number=first_frame_number;
                 
                 % Load each file, add ECGs and move to Backup.
                 for i=1:length(acq_files)
-                    load([OCT.input_dir, acq_files(i).name]);
+                    load(fullfile(OCT.input_dir,acq_files(i).name));
                     if (acqui_info.version>3 && isfield(acqui_info,'ecg_signal'))
                         % We also concatenate all the ecg information into the
                         % acqui_info_all structure
