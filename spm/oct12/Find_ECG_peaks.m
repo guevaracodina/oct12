@@ -35,7 +35,11 @@ ecg=imfilter(ecg,window);
 time=acqui_info.line_period_us*(1:length(ecg))*1e-6;
 
 ecg_untangle_peaks=ecg;
+qq=quantile(double(ecg),100);
 threshold=threshold*max(ecg);
+if (threshold > qq(100) )
+    threshold=qq(100);
+end
 for i=2:length(ecg_untangle_peaks)
     if ecg_untangle_peaks(i)>threshold
         if ecg_untangle_peaks(i-1)==ecg_untangle_peaks(i)
@@ -46,6 +50,7 @@ end
 
 mpd=round(time_between_peaks/acqui_info.line_period_us/1e-6);
 [tmp,qrs_peak_pos]=findpeaks(double(ecg_untangle_peaks),'minpeakheight',threshold,'minpeakdistance',mpd);
+if(size(qrs_peak_pos,1)>1) qrs_peak_pos = qrs_peak_pos'; end;
 
 dpeaks=qrs_peak_pos(2:end)-qrs_peak_pos(1:end-1);
 average_dpeaks=mean(dpeaks);
@@ -78,7 +83,9 @@ qrs_peak_pos=qrs_peak_pos(qrs_peak_pos>0);
 warning('off', 'MATLAB:polyfit:RepeatedPointsOrRescale')
 % This will fit a polynome on the data to estimate where the missing peaks
 % are
-P = polyfit(1:numel(qrs_peak_pos),qrs_peak_pos,4);  % Change row to column //EGC
+tt=zeros(size(qrs_peak_pos));
+tt(1:end)=1:numel(qrs_peak_pos);
+P = polyfit(tt,qrs_peak_pos,4);  % Change row to column //EGC
 points_before_first=-2:0;
 peaks_before_first = polyval(P,points_before_first);
 points_after_last=numel(qrs_peak_pos)+[1:3];
