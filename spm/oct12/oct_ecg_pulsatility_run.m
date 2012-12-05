@@ -12,13 +12,11 @@ rev = '$Rev$'; %#ok
 % Reference from previous computation.
 OCTmat=job.OCTmat;
 save_figures=job.save_figures;
-
-% Loop over acquisitions
-
 save_data=fullfile(job.pulse_data_dir{1},'vessel.csv');
 fid = fopen(save_data, 'w');
 fprintf(fid,'Name, Mean, Median, Std, Max, Min\n');
 
+% Loop over acquisitions
 for acquisition=1:size(OCTmat,1)
     try
     load(OCTmat{acquisition});
@@ -103,6 +101,7 @@ for acquisition=1:size(OCTmat,1)
         close(h);
         
         recons_info.ecg_recons.vessel.time_course=vessel_time_course;
+        recons_info.ecg_recons.vessel.tAxis = tAxis;
         fprintf(fid, '%s , %6.4f , %6.4f , %6.4f , %6.4f , %6.4f\n', OCT.acqui_info.base_filename, mean(vessel_time_course),...
         median(vessel_time_course),std(vessel_time_course),max(vessel_time_course),min(vessel_time_course));
         OCT.acqui_info=acqui_info;
@@ -122,28 +121,28 @@ end
 
 function maximize_figure(h, acqui_info)
 %% Graphic options
-    % Screensize units normalized
-    set(0,'Units','normalized')
-    % white background
-    set(h,'color','w')
-    % Complement figure colors
-    set(h,'DefaultAxesColor','w',...
-        'DefaultAxesXColor','k',...
-        'DefaultAxesYColor','k',...
-        'DefaultAxesZColor','k',...
-        'DefaultTextColor','k',...
-        'DefaultLineColor','k')
-    % Maximize figure
-    screenSize = get(0,'Screensize');
-    screenSize = [screenSize(1)  0.0370 ...
-        screenSize(3) ...
-        screenSize(4)- 0.0370];
-    % Change figure name
-    set(h, 'Name', acqui_info.base_filename)
-    % Normalized units
-    set(h, 'Units', 'normalized');
-    % Maximize figure
-    set(h, 'OuterPosition', screenSize);
+% Screensize units normalized
+set(0,'Units','normalized')
+% white background
+set(h,'color','w')
+% Complement figure colors
+set(h,'DefaultAxesColor','w',...
+    'DefaultAxesXColor','k',...
+    'DefaultAxesYColor','k',...
+    'DefaultAxesZColor','k',...
+    'DefaultTextColor','k',...
+    'DefaultLineColor','k')
+% Maximize figure
+screenSize = get(0,'Screensize');
+screenSize = [screenSize(1)  0.0370 ...
+    screenSize(3) ...
+    screenSize(4)- 0.0370];
+% Change figure name
+set(h, 'Name', acqui_info.base_filename)
+% Normalized units
+set(h, 'Units', 'normalized');
+% Maximize figure
+set(h, 'OuterPosition', screenSize);
 end
 
 % EOF

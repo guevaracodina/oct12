@@ -38,7 +38,7 @@ proc.help   = {'Processing of images.'};
 export        = cfg_repeat;
 export.name   = 'Image Export';
 export.tag    = 'export';
-export.values = {oct_create_dicom_cfg oct_ecg_pulsatility_cfg};
+export.values = {oct_create_dicom_cfg oct_ecg_pulsatility_cfg oct_diameter_vessel_cfg};
 export.forcestruct = true;
 export.help   = {'Image export.'};
 
