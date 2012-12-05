@@ -31,6 +31,14 @@ redo1.values  = {0,1};
 redo1.val     = {0};
 redo1.help    = {'This option will force recomputation.'}; % help text displayed
 
+gate1         = cfg_menu; % This is the generic data entry item
+gate1.name    = 'ECG gate?'; % The displayed name
+gate1.tag     = 'gate';       % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
+gate1.labels  = {'No', 'Yes'};     % Number of inputs required (2D-array with exactly one row and two column)
+gate1.values  = {0,1};
+gate1.val     = {0};
+gate1.help    = {'This option will either average the structural over ECG gates or reconstruct the base structure.'}; % help text displayed
+
 ref1         = cfg_menu; % This is the generic data entry item
 ref1.name    = 'Which signal to use as reference?'; % The displayed name
 ref1.tag     = 'self_ref';       % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
@@ -44,7 +52,7 @@ ref1.help    = {'This option will set which reference is used (measured or mean 
 reconstruct1      = cfg_exbranch;                               % This is the branch that has information about how to run this module
 reconstruct1.name = 'Reconstruct structural';             % The display name
 reconstruct1.tag  = 'oct_reconstruct_struct_cfg'; % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
-reconstruct1.val  = {OCTmat redo1 ref1};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
+reconstruct1.val  = {OCTmat redo1 gate1 ref1};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
 reconstruct1.prog = @oct_reconstruct_struct_run;  % A function handle that will be called with the harvested job to run the computation
 reconstruct1.vout = @oct_reconstruct_struct_vout; % A function handle that will be called with the harvested job to determine virtual outputs
 reconstruct1.help = {'Start from preprocessed data and reconstructs structural acquisition.'};

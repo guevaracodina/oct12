@@ -22,9 +22,15 @@ for acquisition=1:size(OCTmat,1)
             % Parameters for structural reconstructions
             recons_info.struct_recons.self_ref = job.self_ref;
             
+            
             %FrameData is a cell with dimensions of number of files in the acquisition
             [FrameData]=map_dat_file(acqui_info);
             total_frames=acqui_info.nframes*acqui_info.nfiles;
+            
+            % In this case we reconstruct every frame
+            if (job.gate==0)
+                recons_info.size(3)=total_frames;
+            end
             
             wavenumbers=wavelengths2wavenumbers(acqui_info.wavelengths);
             
@@ -37,7 +43,7 @@ for acquisition=1:size(OCTmat,1)
             %% This is the timer used for the waitbar time remaining estimation
             ETA_text='Starting reconstruction';
             
-            for i_frame=1:400 %total_frames;
+            for i_frame=1:total_frames;
                 
                 if i_frame>size(recons_info.A_line_position,2)
                     warning('Requested frame number exceeds number of frames, please verify')
@@ -80,25 +86,31 @@ for acquisition=1:size(OCTmat,1)
                 
                 current_position=squeeze(recons_info.A_line_position(:,i_frame,:));
                 
-                % Sometimes current A-line position is greater than N ECG gates
-                % //EGC
-                if any( current_position(:,2) > OCT.recons_info.number_of_time_gates)
-                    fprintf('Error in frame %d, %s\nA-line position greater than %d\n',...
-                        i_frame, acqui_info.base_filename, OCT.recons_info.number_of_time_gates)
-                    % Take former position
-                    current_position(:,2) = squeeze(recons_info.A_line_position(:,i_frame-1,2));
+                % ECG gating reconstruction code
+                if(job.gate == 1)
+                    % Sometimes current A-line position is greater than N ECG gates
+                    % //EGC
+                    if any( current_position(:,2) > OCT.recons_info.number_of_time_gates)
+                        fprintf('Error in frame %d, %s\nA-line position greater than %d\n',...
+                            i_frame, acqui_info.base_filename, OCT.recons_info.number_of_time_gates)
+                        % Take former position
+                        current_position(:,2) = squeeze(recons_info.A_line_position(:,i_frame-1,2));
+                    end
+                    
+                    % Do operations in linear space for speed.
+                    ii=repmat(current_position(:,1),[1 size(vol.data,2)])';
+                    ii=ii(:);
+                    jj=repmat([1:size(vol.data,2)]',[size(frame_struct,2) 1]);
+                    kk=repmat(current_position(:,2),[1 size(vol.data,2)])';
+                    kk=round(kk(:));
+                    ind1=double(sub2ind(size(vol.data),double(ii),double(jj),double(kk)));
+                    ind2=double(sub2ind(size(ave_grid),round(current_position(:,1)),round(current_position(:,2))));
+                    vol.data(ind1) = frame_struct;
+                    ave_grid(ind2) = ave_grid(ind2)+1;
+                else
+                    % Normal reconstruction code
+                    vol.data(:,:,i_frame) = frame_struct';
                 end
-                
-                % Do operations in linear space for speed.
-                ii=repmat(current_position(:,1),[1 size(vol.data,2)])';
-                ii=ii(:);
-                jj=repmat([1:size(vol.data,2)]',[size(frame_struct,2) 1]);
-                kk=repmat(current_position(:,2),[1 size(vol.data,2)])';
-                kk=round(kk(:));
-                ind1=double(sub2ind(size(vol.data),double(ii),double(jj),double(kk)));
-                ind2=double(sub2ind(size(ave_grid),round(current_position(:,1)),round(current_position(:,2))));
-                vol.data(ind1) = frame_struct;
-                ave_grid(ind2) = ave_grid(ind2)+1;
                 
                 if i_frame==1
                     % The first frame takes longer to execute, therefore the
@@ -113,6 +125,15 @@ for acquisition=1:size(OCTmat,1)
             end
             % Images now reconstructed
             
+            % renormalize for images that are gated
+            if( job.gate == 1)
+                % Renorm by number of average, apply filter to avoid zeros
+                ave_grid = reshape(ave_grid,[size(ave_grid,1) 1 size(ave_grid,2)]);
+                ave_filter=ones(3,3,3)/9;
+                vol.data = imfilter(vol.data,ave_filter,'circular','same') ./ ...
+                imfilter(repmat(ave_grid,[1 size(vol.data,2)]),ave_filter,'circular','same');
+            end
+
             %Saving to disk
             [tmp_dir, tmp_fnm]=fileparts(acqui_info.filename);
             vol.set_maxmin(max(vol.data(:)),min(vol.data(:)));
