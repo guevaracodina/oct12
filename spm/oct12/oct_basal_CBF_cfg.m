@@ -21,22 +21,39 @@ OCTmat.ufilter          = '^OCT.mat$';
 OCTmat.num              = [1 Inf];       % Number of inputs required 
 OCTmat.help             = {'Select OCT.mat for the scan.'}; % help text displayed
 
+redo                    = cfg_menu; % This is the generic data entry item
+redo.name               = 'Force Redo?'; % The displayed name
+redo.tag                = 'redo';       % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
+redo.labels             = {'No', 'Yes'};     % Number of inputs required (2D-array with exactly one row and two column)
+redo.values             = {false, true};
+redo.val                = {false};
+redo.help               = {'This option will force recomputation.'}; % help text displayed
+
 % Select directory to save global results
 save_data_dir           = cfg_files;
 save_data_dir.tag       = 'save_data_dir';
 save_data_dir.name      = 'Directory to save group data';
 save_data_dir.filter    = 'dir'; 
 save_data_dir.num       = [1 1];
-save_data_dir.help      = {'Select the directory where consolidated vessel diameters data will be saved'}';
+save_data_dir.help      = {'Select the directory where consolidated basal flow data will be saved'}';
+
+% Save figures
+save_figures            = cfg_menu; % This is the generic data entry item
+save_figures.name       = 'Save pulsatility figures?'; % The displayed name
+save_figures.tag        = 'save_figures';       % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
+save_figures.labels     = {'No', 'Yes'};     % Number of inputs required (2D-array with exactly one row and two column)
+save_figures.values     = {false, true};
+save_figures.val        = {false};
+save_figures.help       = {'This option will save basal CBF figures.'}; % help text displayed
 
 %% Executable Branch
 basalCBF                = cfg_exbranch;       % This is the branch that has information about how to run this module
 basalCBF.name           = 'Basal CBF';             % The display name
 basalCBF.tag            = 'oct_basal_CBF_cfg'; % The name appearing in the harvested job structure. This name must be unique among all items in the val field of the superior node
-basalCBF.val            = {OCTmat save_data_dir};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
+basalCBF.val            = {OCTmat redo save_data_dir save_figures};    % The items that belong to this branch. All items must be filled before this branch can run or produce virtual outputs
 basalCBF.prog           = @oct_basal_CBF_run;  % A function handle that will be called with the harvested job to run the computation
 basalCBF.vout           = @oct_basal_CBF_vout; % A function handle that will be called with the harvested job to determine virtual outputs
-basalCBF.help           = {'Computes basal (quantitative in nL/s/mm^2) cerebral blood flow (CBF) manually.'};
+basalCBF.help           = {'Computes basal (quantitative in nL/s) cerebral blood flow (CBF) manually.'};
 
 %% Local Functions
 % For output dependency
