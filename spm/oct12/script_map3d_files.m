@@ -2,7 +2,7 @@
 addpath(genpath('D:\spm8\toolbox\oct12'))
 addpath(genpath('D:\spm8\toolbox\pat12'))
 % Load OCT matrix
-OCTmat = 'E:\Edgar\Data\OCT_Results\2012-10-17 - Souris CC08\Souris CC08 - SSL01\3D\OCT.mat';
+OCTmat = 'F:\Edgar\Data\OCT_Results\2012-10-17 - Souris CC08\Souris CC08 - SSL01\3D\OCT.mat';
 load(OCTmat)
 load('D:\spm8\toolbox\oct12\doppler_color_map.mat')
 % %%
@@ -20,7 +20,7 @@ load('D:\spm8\toolbox\oct12\doppler_color_map.mat')
 % end
 
 %% map Doppler files
-pathName = 'E:\Edgar\Data\OCT_Results\2012-10-17 - Souris CC08\Souris CC08 - SSL01\3D';
+pathName = 'F:\Edgar\Data\OCT_Results\2012-10-17 - Souris CC08\Souris CC08 - SSL01\3D';
 datasize = OCT.recons_info.size;
 recons_info = OCT.recons_info;
 f1 = fullfile(pathName,'Souris CC08 - SSL01 - 3D rev fast axis-400.dopl3D');

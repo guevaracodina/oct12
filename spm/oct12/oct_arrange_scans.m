@@ -40,7 +40,7 @@ optargs(1:numvarargs) = varargin;
 subjectFolder = optargs{:};
 
 % Top folder containing all subjects data (change as needed)
-dataFolder = 'E:\Edgar\Data\OCT_Data\';
+dataFolder = 'F:\Edgar\Data\OCT_Data\';
 
 if ~exist(dataFolder,'dir')
     dataFolder = matlabroot;

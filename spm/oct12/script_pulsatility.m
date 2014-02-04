@@ -9,9 +9,9 @@ load('D:\spm8\toolbox\oct12\doppler_color_map.mat')
 %% Open Doppler Y
 % ------------------------------------------------------------------------------
 % Load OCT matrix
-OCTmat = 'E:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\Y\OCT.mat';
+OCTmat = 'F:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\Y\OCT.mat';
 load(OCTmat)
-uiopen('E:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\Y\fig\ROI_pulse.fig',1)
+uiopen('F:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\Y\fig\ROI_pulse.fig',1)
 imcontrast
 %% Save PNG
 export_fig(fullfile(figsFolder,[OCT.acqui_info.base_filename 'doppler']),'-png',gcf)
@@ -20,9 +20,9 @@ export_fig(fullfile(figsFolder,[OCT.acqui_info.base_filename 'doppler']),'-png',
 %% Open Doppler X
 % ------------------------------------------------------------------------------
 % Load OCT matrix
-OCTmat = 'E:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X\OCT.mat';
+OCTmat = 'F:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X\OCT.mat';
 load(OCTmat)
-uiopen('E:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X\fig\ROI_pulse.fig',1)
+uiopen('F:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X\fig\ROI_pulse.fig',1)
 imcontrast
 %% Save PNG
 export_fig(fullfile(figsFolder, [OCT.acqui_info.base_filename 'doppler']),'-png',gcf)
@@ -30,9 +30,9 @@ export_fig(fullfile(figsFolder, [OCT.acqui_info.base_filename 'doppler']),'-png'
 
 %% Map structural file X
 % ------------------------------------------------------------------------------
-OCTmat = 'E:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X\OCT.mat';
+OCTmat = 'F:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X\OCT.mat';
 load(OCTmat)
-pathName = 'E:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X';
+pathName = 'F:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X';
 datasize = OCT.recons_info.size;
 f1 = fullfile(pathName,'Souris NC06 - MCAR01 - Coupe selon X.struct3D');
 struct1 = memmapfile(f1,'Format',{'int16' datasize 'Data'});
@@ -60,9 +60,9 @@ export_fig(fullfile(figsFolder, [OCT.acqui_info.base_filename 'struct']),'-png',
 
 %% Map structural file Y
 % ------------------------------------------------------------------------------
-OCTmat = 'E:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\Y\OCT.mat';
+OCTmat = 'F:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\Y\OCT.mat';
 load(OCTmat)
-pathName = 'E:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\Y';
+pathName = 'F:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\Y';
 datasize = OCT.recons_info.size;
 recons_info = OCT.recons_info;
 f1 = fullfile(pathName,'Souris NC06 - MCAR01 - Coupe selon Y.struct3D');
@@ -91,10 +91,10 @@ export_fig(fullfile(figsFolder, [OCT.acqui_info.base_filename 'struct']),'-png',
 
 
 %% Load data from figs
-OCTmat = 'E:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X\OCT.mat';
+OCTmat = 'F:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X\OCT.mat';
 load(OCTmat)
-hy = hgload('E:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\Y\fig\ROI_pulse.fig');
-hx = hgload('E:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X\fig\ROI_pulse.fig');
+hy = hgload('F:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\Y\fig\ROI_pulse.fig');
+hx = hgload('F:\Edgar\Data\OCT_Results\2012-10-12 - Souris NC06\Souris NC06 - MCAR01\X\fig\ROI_pulse.fig');
 % delve further into the axes/titles/legends by calling
 chx = get(hx,'Children');
 chy = get(hy,'Children');
