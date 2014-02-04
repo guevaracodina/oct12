@@ -1,6 +1,6 @@
 %% Gets average cardiac bpm for several subjects at once
 % Top folder containing all subjects results(change as needed)
-resFolder = 'E:\Edgar\Data\OCT_Results\';
+resFolder = 'F:\Edgar\Data\OCT_Results\';
 
 [subjectList, sts] = cfg_getfile(Inf,'dir','Select subjects',[], resFolder, '^[0-9].*CC.*');
 bpm_avg = zeros(size(subjectList));

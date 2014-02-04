@@ -31,7 +31,7 @@ if numvarargs > 2
 end
 
 % set defaults for optional inputs
-optargs = {'E:\Edgar\Data\OCT_Data\' false};
+optargs = {'F:\Edgar\Data\OCT_Data\' false};
 
 % now put these defaults into the optargs cell array, and overwrite the ones
 % specified in varargin.
