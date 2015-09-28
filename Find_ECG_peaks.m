@@ -78,6 +78,7 @@ qrs_peak_pos=qrs_peak_pos(qrs_peak_pos>0);
 warning('off', 'MATLAB:polyfit:RepeatedPointsOrRescale')
 % This will fit a polynome on the data to estimate where the missing peaks
 % are
+% qrs_peak_pos = qrs_peak_pos';
 P = polyfit(1:numel(qrs_peak_pos),qrs_peak_pos,4);  % Change row to column //EGC
 points_before_first=-2:0;
 peaks_before_first = polyval(P,points_before_first);
