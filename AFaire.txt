@@ -4,4 +4,4 @@ A faire:
 -Revisiter la compensation de dispersion
 -Comment aller vers SPM pour stim vs vaisseau
 -Valider le vitesse
-Test reste
+-Test reste
